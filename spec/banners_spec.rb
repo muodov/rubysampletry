@@ -61,50 +61,56 @@ describe Advidi::API do
       Click.create(:banner => 2, :campaign => 3, :quarter => @quarter)
     end
 
-    it "returns five random banners for notexistent campaign" do
+    it "returns random banner for notexistent campaign" do
       get "/campaigns/api/100"
       expect(last_response.status).to eq(200)
-      expect(JSON.parse(last_response.body)['banners'].length).to eq(5)
+      #expect(JSON.parse(last_response.body)['banners'].length).to eq(5)
+      expect((1..500).include?(JSON.parse(last_response.body)['banner'])).to be true
     end
 
     it "returns up to ten banners with the largest revenue/shows, if those exist" do
       get "/campaigns/api/1"
       expect(last_response.status).to eq(200)
-      banners = JSON.parse(last_response.body)['banners']
-      expect(banners.length).to eq(10)
-      expect(banners.sort).to eq([3,4,5,6,7,8,9,10,11,12])
+      banner = JSON.parse(last_response.body)['banner']
+      #expect(banners.length).to eq(10)
+      expect([3,4,5,6,7,8,9,10,11,12].include?(banner)).to be true
     end
 
     it "if there is not enough banners with revenue, return banners with maximum clicks/shows" do
       get "/campaigns/api/2"
       expect(last_response.status).to eq(200)
-      banners = JSON.parse(last_response.body)['banners']
-      expect(banners.length).to eq(5)
-      expect(banners.sort).to eq([1,4,5,6,7])
+      banner = JSON.parse(last_response.body)['banner']
+      #expect(banners.length).to eq(5)
+      expect([1,4,5,6,7].include?(banner)).to be true
     end
 
     it "if there is not enough banners with clicks, return random banners" do
       get "/campaigns/api/3"
       expect(last_response.status).to eq(200)
-      banners = JSON.parse(last_response.body)['banners']
-      expect(banners.length).to eq(5)
-      expect(banners.include?(1)).to be true
-      expect(banners.include?(2)).to be true
+      banner = JSON.parse(last_response.body)['banner']
+      #expect(banners.length).to eq(5)
+      #expect(banners.include?(1)).to be true
+      #expect(banners.include?(2)).to be true
+      expect((1..500).include?(banner)).to be true
     end
 
     it "doesn't return the same banners twice in a row" do
       get "/campaigns/api/1"
       puts rack_mock_session.cookie_jar.to_hash
       expect(last_response.status).to eq(200)
-      banners = JSON.parse(last_response.body)['banners']
-      expect(banners.length).to eq(10)
-      expect(banners.sort).to eq([3,4,5,6,7,8,9,10,11,12])
+      banner = JSON.parse(last_response.body)['banner']
+      #expect(banners.length).to eq(10)
+      #expect(banners.sort).to eq([3,4,5,6,7,8,9,10,11,12])
+      pool = [3,4,5,6,7,8,9,10,11,12]
+      expect(pool.include?(banner)).to be true
       get "/campaigns/api/1"
-      banners1 = JSON.parse(last_response.body)['banners']
-      expect(banners1.length).to eq(5)
-      banners.each do |recent_banner|
-        expect(banners1.include?(recent_banner)).to be false
-      end
+      banner1 = JSON.parse(last_response.body)['banner']
+      #expect(banners1.length).to eq(5)
+      #banners.each do |recent_banner|
+      #  expect(banners1.include?(recent_banner)).to be false
+      #end
+      pool.delete(banner)
+      expect(pool.include?(banner1)).to be true
     end
 
   end

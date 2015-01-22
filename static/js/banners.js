@@ -16,9 +16,10 @@ $( document ).ready(function() {
                 $('#banners').text(data.error);
             } else {
                 $('#campaignId').val(campaign_id);
-                $.each(shuffle(data.banners), function (k,v) {
-                    $('<img>').attr('src', '/campaigns/images/image_' + v + '.png').appendTo('#banners');
-                });
+                //$.each(shuffle(data.banners), function (k,v) {
+                //    $('<img>').attr('src', '/campaigns/images/image_' + v + '.png').appendTo('#banners');
+                //});
+                $('<img>').attr('src', '/campaigns/images/image_' + data.banner + '.png').appendTo('#banners');
             }
         }).fail(function(){
             $('#banners').text('error');
